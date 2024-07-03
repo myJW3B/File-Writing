@@ -15,5 +15,10 @@
 			"homepage": "https://github.com/Yohn",
 			"role": "Developer"
 		}
-	]
+	],
+	"autoload": {
+		"psr-4": {
+			"JW3B\\Data\\" : "Data/"
+		}
+	}
 }
