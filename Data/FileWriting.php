@@ -58,7 +58,7 @@ class FileWriting {
 	 * return
 	 *
 	 * @param string $path
-	 * @return array - include($file); value is stored in return, so use as:
+	 * @return array|bool - include($file); value is stored in return, so use as:
 	 * ````
 	 * <?php
 	 * $stored_array = FileWriting::get_file('something/hidden/config');
@@ -66,7 +66,26 @@ class FileWriting {
 	 */
 	public function get_file($path){
 		$real_file = $this->check_path($path);
-		return include($real_file);
+		if(is_file($real_file)){
+			return include($real_file);
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * get_line_file will get the contents of your lined file in an array based on each row.
+	 *
+	 * @param string $path
+	 * @return array|bool
+	 */
+	public function get_line_file($path){
+		$real_file = $this->check_path($path);
+		if(is_file($real_file)){
+			return file($real_file);
+		} else {
+			return false;
+		}
 	}
 
 	private function check_path($path){
@@ -232,8 +251,8 @@ class FileWriting {
 	}
 
 	/**
-	 * remove function
-	 *	Not setup
+	 * remove lined file function
+	 *
 	 * @param string $path
 	 * @param string $key
 	 * @return bool
