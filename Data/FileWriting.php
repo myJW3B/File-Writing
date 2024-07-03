@@ -16,7 +16,14 @@ class FileWriting {
 	 * @param string $dataname
 	 * 		The directory where the files are saved. Could be called a database table in you think like that.
 	 * @param string $style
-	 *  'return' = create a file with <?php return [];
+	 * <?php
+	 * 		'return' = create a file with <?php return [];
+	 * 		'lines' = creare a php file with data on separate lines
+	 * @param string $tabs_or_space
+	 * 	the indentation, put spaces if you'd like space, or leave alone for tabs.
+	 *
+	 *	For the style::
+	 * 'return' = create a file with <?php return [];
 	 *  You can then call
 	 * ````php
 	 * <?php
@@ -34,9 +41,6 @@ class FileWriting {
 	 *  more older lines
 	 *  another data
 	 * ````
-
-	 * @param string $tabs_or_space
-	 * 	the indentation, put spaces if you'd like space, or leave alone for tabs.
 	 */
 	public function __construct($dataname, $style='return', $tabs_or_space='	'){
 		$this->style = $style;
@@ -87,20 +91,27 @@ class FileWriting {
 	 * 		The path from within the __construct($path) directory
 	 * @param string|array $data
 	 * 		The string to save, or array to save
-	 * 		Currently we cannot save the keys to the array,
-	 * 		Maybe in a later version we can.
+	 * @param string $how_to_update
+	 * 		'add'(default) 'replace' or 'update' what is currently in the file
+	 * ````<?php
+	 * 		$File->save($path, $data, 'add'); 		// will add your new array to exsisting array
+	 * 		$File->save($path, $data, 'replace'); // replace whole file with the new data
+	 * 		$File->save($path, $data, 'update');  // will update the key values, or add new ones
+	 * ````
 	 * @return bool
 	 */
-	public function save($path, $data){
+	public function save($path, $data, $how_to_update='add'){
 		$this->real_file = $this->check_path($path);
-		return $this->set_up_file($data)->save_file('w');
+		return $this->set_up_file($data, strtolower( $how_to_update ))->save_file('w');
 		//$this->save_file($this->dir_path.$path, $this->file_data($data));
 		//return true;
 	}
 
-	private function set_up_file($data){
+	private function set_up_file($data, $how_to_update){
 		if($this->style == 'lines'){
 			if(is_file($this->real_file)){
+				$bkup = substr_replace($this->real_file, 'backup.php', -3, 3);
+				copy($this->real_file, $bkup);
 				$found = file($this->real_file);
 				$found[] = $this->set_up_line_file($data);
 				$this->file_data = implode(PHP_EOL, $found);
@@ -109,8 +120,16 @@ class FileWriting {
 			}
 		} else if($this->style == 'return'){
 			if(is_file($this->real_file)){
+				$bkup = substr_replace($this->real_file, 'backup.php', -3, 3);
+				copy($this->real_file, $bkup);
 				$found = include($this->real_file);
-				$data = array_replace($found, $data);
+				if($how_to_update == 'replace'){
+					// were replacing the whole file with this new data
+				} else if($how_to_update == 'add') {
+					$data = array_merge_recursive( $found, $data );
+				} else if($how_to_update == 'update'){
+					$data = array_merge( $found, $data );
+				}
 			}
 			$this->file_data = "<?php".PHP_EOL
 				."return [".PHP_EOL
