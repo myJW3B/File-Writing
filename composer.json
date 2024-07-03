@@ -1,0 +1,19 @@
+{
+	"name": "myjw3b/file-writing",
+	"description": "File database handler",
+	"minimum-stability":"dev",
+	"license": "MIT",
+	"type": "project",
+	"require": {
+		"php": ">=8",
+		"myjw3b/helpful": "*",
+	},
+	"authors": [
+		{
+			"name": "John Brittain III",
+			"email": "Yohn@coming-soon.com",
+			"homepage": "https://github.com/Yohn",
+			"role": "Developer"
+		}
+	]
+}
