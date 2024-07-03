@@ -6,7 +6,7 @@
 	"type": "project",
 	"require": {
 		"php": ">=8",
-		"myjw3b/helpful": "*",
+		"myjw3b/helpful": "*"
 	},
 	"authors": [
 		{
