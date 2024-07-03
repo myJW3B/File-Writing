@@ -1,13 +1,23 @@
 {
 	"name": "myjw3b/file-writing",
-	"description": "File database handler",
+	"description": "File database handler for easily storing, updating, and selecting info.",
 	"minimum-stability":"dev",
 	"license": "MIT",
 	"type": "project",
 	"require": {
-		"php": ">=8",
+		"php": ">=8.1",
 		"myjw3b/helpful": "*"
 	},
+	"keywords": [
+		"file manipulation",
+		"file handler",
+		"file",
+		"file storage",
+		"file writing",
+		"file database",
+		"database",
+		"data storahe"
+	],
 	"authors": [
 		{
 			"name": "John Brittain III",
