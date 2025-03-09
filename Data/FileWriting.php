@@ -1,7 +1,7 @@
 <?php
 
 namespace JW3B\Data;
-use JW3B\erday\Helpful_Files;
+use JW3B\Helpful\Files;
 
 class FileWriting {
 	public $dir_path;
@@ -45,11 +45,11 @@ class FileWriting {
 	public function __construct($dataname, $style='return', $tabs_or_space='	'){
 		$this->style = $style;
 		$this->tabs_or_space = $tabs_or_space;
-		$this->dir_path = str_ends_with($dataname, '/') ? $dataname : $dataname.'/';
-		$ex = explode('/', $this->dir_path);
+		$this->dir_path = str_ends_with(haystack: $dataname, needle: '/') ? $dataname : $dataname.'/';
+		$ex = explode(separator: '/', string: $this->dir_path);
 		$prev = '';
 		foreach($ex as $dir){
-			Helpful_Files::mk_dir_writable($prev . $dir);
+			Files::mk_dir_writable($prev . $dir);
 			$prev = $dir.'/';
 		}
 	}
@@ -64,9 +64,9 @@ class FileWriting {
 	 * $stored_array = FileWriting::get_file('something/hidden/config');
 	 * ````
 	 */
-	public function get_file($path){
-		$real_file = $this->check_path($path);
-		if(is_file($real_file)){
+	public function get_file($path): mixed{
+		$real_file = $this->check_path(path: $path);
+		if(is_file(filename: $real_file)){
 			return include($real_file);
 		} else {
 			return false;
@@ -79,24 +79,24 @@ class FileWriting {
 	 * @param string $path
 	 * @return array|bool
 	 */
-	public function get_line_file($path){
-		$real_file = $this->check_path($path);
-		if(is_file($real_file)){
-			return file($real_file);
+	public function get_line_file($path): array|bool{
+		$real_file = $this->check_path(path: $path);
+		if(is_file(filename: $real_file)){
+			return file(filename: $real_file);
 		} else {
 			return false;
 		}
 	}
 
-	private function check_path($path){
-		$dirs = explode('/', $path);
-		$total = count($dirs);
+	private function check_path($path): string{
+		$dirs = explode(separator: '/', string: $path);
+		$total = count(value: $dirs);
 		$fileName = $dirs[$total - 1];
 		if($total > 1){
 			$prev = '';
 			for($i=0;$i<$total;$i++){
 				if($dirs[$i] != $fileName){
-					Helpful_Files::mk_dir_writable($this->dir_path.$prev.$dirs[$i]);
+					Files::mk_dir_writable($this->dir_path.$prev.$dirs[$i]);
 					$prev .= $dirs[$i].'/';
 				}
 			}
@@ -119,28 +119,31 @@ class FileWriting {
 	 * ````
 	 * @return bool
 	 */
-	public function save($path, $data, $how_to_update='add'){
-		$this->real_file = $this->check_path($path);
-		return $this->set_up_file($data, strtolower( $how_to_update ))->save_file('w');
+	public function save($path, $data, $how_to_update='add'): bool{
+		$this->real_file = $this->check_path(path: $path);
+		return $this->set_up_file(
+			data: is_array(value: $data ) ? $data : [$data],
+			how_to_update: strtolower( string: $how_to_update )
+		)->save_file(writing: 'w');
 		//$this->save_file($this->dir_path.$path, $this->file_data($data));
 		//return true;
 	}
 
-	private function set_up_file($data, $how_to_update){
+	private function set_up_file($data, $how_to_update): static{
 		if($this->style == 'lines'){
-			if(is_file($this->real_file)){
-				$bkup = substr_replace($this->real_file, 'backup.php', -3, 3);
-				copy($this->real_file, $bkup);
-				$found = file($this->real_file);
-				$found[] = $this->set_up_line_file($data);
-				$this->file_data = implode(PHP_EOL, $found);
+			if(is_file(filename: $this->real_file)){
+				$bkup = substr_replace(string: $this->real_file, replace: 'backup.php', offset: -3, length: 3);
+				copy(from: $this->real_file, to: $bkup);
+				$found = file(filename: $this->real_file);
+				$found[] = $this->set_up_line_file(data: $data);
+				$this->file_data = implode(separator: PHP_EOL, array: $found);
 			} else {
-				$this->file_data = '<?php exit;'.PHP_EOL.$this->set_up_line_file($data).PHP_EOL;
+				$this->file_data = '<?php exit;'.PHP_EOL.$this->set_up_line_file(data: $data).PHP_EOL;
 			}
 		} else if($this->style == 'return'){
-			if(is_file($this->real_file)){
-				$bkup = substr_replace($this->real_file, 'backup.php', -3, 3);
-				copy($this->real_file, $bkup);
+			if(is_file(filename: $this->real_file)){
+				$bkup = substr_replace(string: $this->real_file, replace: 'backup.php', offset: -3, length: 3);
+				copy(from: $this->real_file, to: $bkup);
 				$found = include($this->real_file);
 				if($how_to_update == 'replace'){
 					// were replacing the whole file with this new data
@@ -152,43 +155,43 @@ class FileWriting {
 			}
 			$this->file_data = "<?php".PHP_EOL
 				."return [".PHP_EOL
-					.$this->setup_return_ary($data,1).PHP_EOL
+					.$this->setup_return_ary(data: $data,tabs: 1).PHP_EOL
 				.'];';
 		} else {
-			throw new \ErrorException('FileWriting style "'.$this->style.'" is not a valid acceptable style type. Currently only "lines" and "return" are the allowed values', 10, E_ERROR);
+			throw new \ErrorException(message: 'FileWriting style "'.$this->style.'" is not a valid acceptable style type. Currently only "lines" and "return" are the allowed values', code: 10, severity: E_ERROR);
 		}
 		return $this;
 	}
 
-	private function setup_return_ary($data, $tabs=1){
+	private function setup_return_ary($data, $tabs=1): string{
 		$file = '';
-		$t = $this->tabs($tabs);
-		if(is_array($data)){
+		$t = $this->tabs(tabs: $tabs);
+		if(is_array(value: $data)){
 			// remove the last ,
-			$total = count($data);
+			$total = count(value: $data);
 			$c = 0;
 			foreach($data as $k => $v){
 				$c++;
 				$add = $c < $total ? ',' : '';
-				$file .= $t.'\''.$k.'\' => '.$this->check_value_for_return($v,$tabs).$add;
+				$file .= $t.'\''.$k.'\' => '.$this->check_value_for_return(str: $v,tabs: $tabs).$add;
 			}
 		} else {
-			$file .= $file .= $t.'\''.str_replace("'", "\'", $data).'\'';
+			$file .= $file .= $t.'\''.str_replace(search: "'", replace: "\'", subject: $data).'\'';
 		}
 		return $file;
 	}
 
-	private function check_value_for_return($str,$tabs){
+	private function check_value_for_return($str,$tabs): string{
 		if(is_array($str)){
 			return '['.PHP_EOL
-			.$this->setup_return_ary($str,$tabs+1)
-			.$this->tabs($tabs).']';
+			.$this->setup_return_ary(data: $str,tabs: $tabs+1)
+			.$this->tabs(tabs: $tabs).']';
 		} else {
-			return '\''.str_replace("'", "\'", $str).'\'';
+			return '\''.str_replace(search: "'", replace: "\'", subject: $str).'\'';
 		}
 	}
 
-	private function tabs($tabs){
+	private function tabs($tabs): string{
 		$file = '';
 		for($i=0;$i<$tabs;$i++){
 			$file .= $this->tabs_or_space;
@@ -196,30 +199,30 @@ class FileWriting {
 		return $file;
 	}
 
-	private function save_file($writing='a'){
-		$fp = fopen($this->real_file, $writing);
+	private function save_file($writing='a'): bool{
+		$fp = fopen(filename: $this->real_file, mode: $writing);
 		//echo $this->real_file;
-		flock($fp, 2);
-		fwrite($fp, $this->file_data);
-		flock($fp, 3);
-		fclose($fp);
+		flock(stream: $fp, operation: 2);
+		fwrite(stream: $fp, data: $this->file_data);
+		flock(stream: $fp, operation: 3);
+		fclose(stream: $fp);
 		return true;
 	}
 
-	private function set_up_line_file($data){
-		if(is_array($data)){
-			if(array_is_list($data)){
+	private function set_up_line_file($data): string{
+		if(is_array(value: $data)){
+			if(array_is_list(array: $data)){
 				foreach($data as $v){
-					$row[] = urlencode($v);
+					$row[] = urlencode(string: $v);
 				}
 			} else {
 				foreach($data as $k => $v){
-					$row[] = urlencode($k).'{=}'.urlencode($v);
+					$row[] = urlencode(string: $k).'{=}'.urlencode(string: $v);
 				}
 			}
-			return implode('|', $row);
+			return implode(separator: '|', array: $row);
 		} else {
-			return urlencode($data);
+			return urlencode(string: $data);
 		}
 	}
 
@@ -232,14 +235,14 @@ class FileWriting {
 	 * @param string $key
 	 * @return bool|array
 	 */
-	public function find($path, $key=''){
-		if(is_file($this->dir_path . $path)){
-			$file = file($this->dir_path . $path);
-			$rows = explode("\n", $file);
+	public function find($path, $key=''): array|bool{
+		if(is_file(filename: $this->dir_path . $path)){
+			$file = file(filename: $this->dir_path . $path);
+			$rows = explode(separator: "\n", string: $file);
 			if($key != ''){
 				foreach($rows as $rr){
-					$cols = explode('|', trim( $rr ));
-					if(urldecode(trim( $cols[0] )) == $key){
+					$cols = explode(separator: '|', string: trim( string: $rr ));
+					if(urldecode(string: trim( string: $cols[0] )) == $key){
 						return $cols;
 					}
 				}
@@ -257,23 +260,23 @@ class FileWriting {
 	 * @param string $key
 	 * @return bool
 	 */
-	public function remove($path, $key){
+	public function remove($path, $key): bool{
 		$found = false;
-		if(is_file($this->dir_path . $path)){
+		if(is_file(filename: $this->dir_path . $path)){
 			$this->real_file = $this->dir_path . $path;
-			$file = file($this->dir_path . $path);
-			$rows = explode("\n", $file);
+			$file = file(filename: $this->dir_path . $path);
+			$rows = explode(separator: "\n", string: $file);
 			$put_back_in = '';
 			foreach($rows as $rr){
-				$cols = explode('|', trim( $rr ));
-				if(urldecode(trim( $cols[0] )) != $key){
-					$put_back_in = trim($rr)."\n";
+				$cols = explode(separator: '|', string: trim( string: $rr ));
+				if(urldecode(string: trim( string: $cols[0] )) != $key){
+					$put_back_in = trim(string: $rr)."\n";
 				} else {
 					$found = true;
 				}
 			}
 			$this->file_data = $put_back_in;
-			$this->save_file('w');
+			$this->save_file(writing: 'w');
 		}
 		return $found;
 	}

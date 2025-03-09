@@ -1,0 +1,68 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "3938fcbe48fdcb8236d193e20314652a",
+    "packages": [
+        {
+            "name": "myjw3b/helpful",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/myJW3B/Helpful.git",
+                "reference": "0e7dddc8a9618192c2ca2822fae170b651d06077"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/myJW3B/Helpful/zipball/0e7dddc8a9618192c2ca2822fae170b651d06077",
+                "reference": "0e7dddc8a9618192c2ca2822fae170b651d06077",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.0"
+            },
+            "require-dev": {
+                "clean/phpdoc-md": "^0.19",
+                "phpstan/phpstan": "^1.12"
+            },
+            "default-branch": true,
+            "type": "project",
+            "autoload": {
+                "psr-4": {
+                    "JW3B\\Helpful\\": "Helpful/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "John Brittain III",
+                    "email": "Yohn@coming-soon.com",
+                    "homepage": "https://github.com/Yohn",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Some useful classes and functions to help with your everyday php building.",
+            "support": {
+                "issues": "https://github.com/myJW3B/Helpful/issues",
+                "source": "https://github.com/myJW3B/Helpful/tree/main"
+            },
+            "time": "2025-01-16T00:36:59+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "dev",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {
+        "php": ">=8.1"
+    },
+    "platform-dev": [],
+    "plugin-api-version": "2.3.0"
+}

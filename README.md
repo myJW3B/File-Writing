@@ -9,8 +9,8 @@ composer require myjw3b/file-writing
 # Autoload
 make sure to include this at the top of your page
 ````php
-include "vendor/autoload.php";
 use JW3B\Data\FileWriting;
+include "vendor/autoload.php";
 ````
 # Storage
 ````php

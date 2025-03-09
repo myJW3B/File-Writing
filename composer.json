@@ -1,12 +1,11 @@
 {
 	"name": "myjw3b/file-writing",
 	"description": "File database handler for easily storing, updating, and selecting info.",
-	"minimum-stability":"dev",
 	"license": "MIT",
 	"type": "project",
 	"require": {
 		"php": ">=8.1",
-		"myjw3b/helpful": "*"
+		"myjw3b/helpful": "2.0.1"
 	},
 	"keywords": [
 		"file manipulation",
